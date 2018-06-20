@@ -1,5 +1,7 @@
 #Simple Bank API Service
 
+[![pipeline status](https://gitlab.com/kpavlov/sample-bank/badges/master/pipeline.svg)](https://gitlab.com/kpavlov/sample-bank/commits/master)
+
 The project consists of an API to be used for opening customer bank accounts and saving transactions.
 
 The API will expose an endpoint which accepts the user information (`customerID`, `initialCredit`).
