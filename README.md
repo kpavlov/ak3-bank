@@ -1,4 +1,4 @@
-#Simple Bank API Service
+# Simple Bank API Service
 
 [![pipeline status](https://gitlab.com/kpavlov/sample-bank/badges/master/pipeline.svg)](https://gitlab.com/kpavlov/sample-bank/commits/master)
 
