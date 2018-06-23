@@ -4,17 +4,19 @@ import akka.actor.AbstractActor
 import akka.actor.AbstractLoggingActor
 import akka.actor.ActorRef
 import akka.actor.Props
+import akka.pattern.PatternsCS
+import kpavlov.bank.api.model.AccountStatement
 import kpavlov.bank.api.model.CustomerDetails
-import kpavlov.bank.domain.AccountId
-import kpavlov.bank.domain.AccountRef
-import kpavlov.bank.domain.Customer
-import kpavlov.bank.domain.CustomerId
+import kpavlov.bank.domain.*
 import java.math.BigDecimal
+import java.util.concurrent.CountDownLatch
 
-data class CreateAccountCmd(val initialBalanceCents: Long = 0)
+data class CreateAccountCmd(val initialBalanceCents: Long = 0,
+                            val type: AccountType = AccountType.CURRENT)
+
 class GetCustomerDetailsCmd
 data class CustomerBalanceUpdatedEvt(val customerId: CustomerId, val newBalanceInCents: Long)
-data class AccountCreatedEvt(val accountId: AccountId)
+data class AccountCreatedEvt(val accountId: AccountId, val customerBalanceCents: Long)
 
 data class CreateTransactionCmd(
         val accountId: AccountId,
@@ -38,9 +40,7 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
                     createAccount(sender, cmd)
                 }
                 .match(AccountBalanceUpdatedEvt::class.java) { evt ->
-                    log().info("Received {}", evt)
-                    balanceCents += evt.balanceDeltaInCents
-                    context.system.eventStream().publish(CustomerBalanceUpdatedEvt(info.id, balanceCents))
+                    onAccountBalanceUpdated(evt)
                 }
                 .match(CreateTransactionCmd::class.java) { cmd ->
                     log().info("Received {}", cmd)
@@ -51,33 +51,59 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
                 .build()
     }
 
+    private fun onAccountBalanceUpdated(evt: AccountBalanceUpdatedEvt, toNotify: ActorRef? = null) {
+        log().debug("Account balance updated. Updating customer balance. {}", evt)
+        balanceCents += evt.balanceDeltaInCents
+        val balanceUpdatedEvt = CustomerBalanceUpdatedEvt(info.id, balanceCents)
+        toNotify?.let {
+            it.tell(balanceUpdatedEvt, self)
+        }
+        context.system.eventStream().publish(balanceUpdatedEvt)
+    }
+
     private fun createAccount(sender: ActorRef, cmd: CreateAccountCmd): AccountId {
         val newAccountId = accounts.size + 1
-        val props = Props.create(AccountActor::class.java, newAccountId)
-        val actorRef = context.actorOf(props, "account-$newAccountId")
-        accounts[newAccountId] = actorRef
-
-        sender.tell(AccountCreatedEvt(newAccountId), self)
+        val props = Props.create(AccountActor::class.java, newAccountId, cmd.type)
+        val accountActorRef = context.actorOf(props, "account-$newAccountId")
+        accounts[newAccountId] = accountActorRef
 
         if (cmd.initialBalanceCents > 0) {
-            actorRef.tell(CreateTransactionCmd(newAccountId, cmd.initialBalanceCents), self)
+            val depositCmd = CreateTransactionCmd(newAccountId, cmd.initialBalanceCents)
+            PatternsCS.ask(accountActorRef, depositCmd, ACTOR_TIMEOUT)
+                    .whenComplete { evt, t ->
+                        handleActorResponse(t, "Can't deposit initial balance",
+                                evt, AccountBalanceUpdatedEvt::class.java) { e ->
+                            onAccountBalanceUpdated(e)
+                            sender.tell(AccountCreatedEvt(newAccountId, e.balanceInCents), self)
+                        }
+                    }
+        } else {
+            sender.tell(AccountCreatedEvt(newAccountId, 0), self)
         }
-
         return newAccountId
     }
 
     private fun createCustomerDetails(): CustomerDetails {
+        val countDownLatch = CountDownLatch(accounts.size)
+        val accountDetails = mutableListOf<AccountStatement>()
         for (entry in accounts) {
-//            PatternsCS.ask(entry.value, GetStatementCmd(), )
+            PatternsCS.ask(entry.value, GetStatementCmd(), ACTOR_TIMEOUT)
+                    .whenComplete { evt, t ->
+                        handleActorResponse(t, "Can't request account statement",
+                                evt, AccountStatementEvt::class.java) { e ->
+                            accountDetails.add(e.accountDetails)
+                            countDownLatch.countDown()
+                        }
+                    }
         }
+        countDownLatch.await()
 
         return CustomerDetails(
                 id = info.id,
                 firstName = info.firstName,
                 lastName = info.lastName,
                 balance = BigDecimal(balanceCents).movePointLeft(2).setScale(2),// not always 2
-                accounts = emptyList()
+                accounts = accountDetails
         )
-
     }
 }

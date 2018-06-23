@@ -1,9 +1,7 @@
 package kpavlov.bank
 
-import akka.actor.ActorSystem
-import akka.event.EventStream
-import akka.event.Logging
-import akka.testkit.javadsl.TestKit
+import io.kotlintest.matchers.date.shouldNotBeBefore
+import io.kotlintest.matchers.numerics.shouldBeGreaterThan
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
 import kotlinx.coroutines.experimental.future.await
@@ -11,9 +9,9 @@ import kotlinx.coroutines.experimental.runBlocking
 import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
 import kpavlov.bank.api.model.CustomerDetails
+import kpavlov.bank.domain.AccountType
 import kpavlov.bank.domain.CustomerId
 import kpavlov.bank.services.KoinModule
-import kpavlov.bank.services.actors.CustomerBalanceUpdatedEvt
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -23,9 +21,10 @@ import org.koin.standalone.StandAloneContext.startKoin
 import org.koin.standalone.inject
 import org.koin.test.KoinTest
 import org.koin.test.dryRun
-import scala.concurrent.duration.Duration
 import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
+import java.time.Clock
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 const val tyrionId = "1"
 const val bronnId = "2"
@@ -33,6 +32,9 @@ const val bronnId = "2"
 class AccountServiceTest : KoinTest {
 
     companion object {
+
+        private val clock = Clock.systemUTC()
+
         @BeforeClass
         @JvmStatic
         fun beforeClassAll() {
@@ -46,31 +48,18 @@ class AccountServiceTest : KoinTest {
         }
     }
 
-    val accountsApi: AccountsApi by inject()
-    val customersApi: CustomersApi by inject()
-    val eventStream: EventStream by inject()
-    val actorSystem: ActorSystem by inject()
-
-    lateinit var probe: TestKit
+    private val accountsApi: AccountsApi by inject()
+    private val customersApi: CustomersApi by inject()
+    private lateinit var startTime: OffsetDateTime
 
     @Before
     fun before() {
-        probe = TestKit(actorSystem)
-        eventStream.setLogLevel(Logging.DebugLevel())
+        startTime = clock.instant().atOffset(ZoneOffset.UTC)
     }
 
     @Test
     fun shouldStart() {
         dryRun()
-
-        val tyrion = getCustomerDetails(tyrionId)
-        with(tyrion) {
-            shouldNotBe(null)
-            id.shouldBe(tyrionId)
-            firstName.shouldBe("Tirion")
-            lastName.shouldBe("Lannister")
-            balance.longValueExact().shouldBe(0)
-        }
 
         val bronn = getCustomerDetails(bronnId)
         with(bronn) {
@@ -79,29 +68,39 @@ class AccountServiceTest : KoinTest {
             firstName.shouldBe("Bronn")
             lastName.shouldBe("of the Blackwater")
             balance.longValueExact().shouldBe(0)
+            accounts.size shouldBe 0
         }
     }
 
     @Test
     fun shouldOpenAccount() {
-        println("AccountServiceTest.shouldOpenAccount")
 
-        val accountId = accountsApi.openAccount(tyrionId, BigDecimal.ONE)
+        val initialCreditCents = (1..1000_000_00).random()
+        val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
+        val createdAccountEvt = accountsApi.openAccount(tyrionId, initialCredit)
                 .toCompletableFuture().get()
 
-        accountId.shouldNotBe(null)
-        val msg = probe.expectNoMsg(Duration.create(100, TimeUnit.MILLISECONDS))
+        createdAccountEvt shouldNotBe null
+        createdAccountEvt.accountId shouldNotBe null
+        createdAccountEvt.customerBalanceCents shouldBe initialCreditCents
 
-        val balanceUpdatedEvt = probe.expectMsgClass(CustomerBalanceUpdatedEvt::class.java)
-//        probe.expectMsg(java.time.Duration.ofMillis(1000), "hello");
+        val tyrion = getCustomerDetails(tyrionId)
+        with(tyrion) {
+            shouldNotBe(null)
+            id.shouldBe(tyrionId)
+            firstName.shouldBe("Tirion")
+            lastName.shouldBe("Lannister")
+            balance.compareTo(initialCredit) shouldBe 0
+            accounts.size shouldBe 1
+            with(accounts[0]) {
+                id.shouldBeGreaterThan(0)
+                type shouldBe AccountType.CURRENT
+                timestamp.shouldNotBeBefore(startTime)
+                transactions.size shouldBe 1
+                transactions[0].amount
+            }
+        }
 
-
-        val receiveN = probe.receiveN(100)
-
-        val customerDetails = getCustomerDetails(tyrionId)
-
-        println(customerDetails)
-        customerDetails.balance.longValueExact().shouldBe(100)
     }
 
     private fun getCustomerDetails(customerId: CustomerId): CustomerDetails {

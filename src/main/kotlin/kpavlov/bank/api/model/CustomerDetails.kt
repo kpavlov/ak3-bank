@@ -8,5 +8,5 @@ data class CustomerDetails(
         val firstName: String,
         val lastName: String,
         val balance: BigDecimal,
-        val accounts: List<Account>
+        val accounts: List<AccountStatement>
 )

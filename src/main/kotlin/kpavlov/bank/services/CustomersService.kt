@@ -12,6 +12,7 @@ class CustomersService(actorSystem: ActorSystem) : AbstractAkkaService(actorSyst
 
     override fun getCustomerDetails(customerId: String): CompletionStage<CustomerDetails> {
         val actorSelection = lookupCustomerActor(customerId)
+        @Suppress("UNCHECKED_CAST")
         return PatternsCS.ask(actorSelection, GetCustomerDetailsCmd(), TIMEOUT) as CompletionStage<CustomerDetails>
     }
 }

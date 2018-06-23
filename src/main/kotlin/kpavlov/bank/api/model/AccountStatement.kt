@@ -2,11 +2,11 @@ package kpavlov.bank.api.model
 
 import kpavlov.bank.domain.AccountId
 import kpavlov.bank.domain.AccountType
-import kpavlov.bank.domain.CustomerId
+import java.time.OffsetDateTime
 
-data class Account(
+data class AccountStatement(
         val id: AccountId,
-        val customerId: CustomerId,
         val type: AccountType,
-        val transactions: List<Transaction>
+        val transactions: List<Transaction>,
+        val timestamp: OffsetDateTime
 )
