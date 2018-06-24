@@ -7,4 +7,9 @@ import java.math.BigDecimal
 @Location("/customers/{customerId}/accounts")
 data class CreateAccountRequest(
         val customerId: CustomerId,
-        val initialCredit: BigDecimal = BigDecimal.ZERO)
+        val initialCredit: String = "0") {
+
+    fun getInitialCredit(): BigDecimal {
+        return BigDecimal(initialCredit)
+    }
+}
