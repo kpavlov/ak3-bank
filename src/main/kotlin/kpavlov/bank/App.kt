@@ -7,7 +7,6 @@ import kpavlov.bank.rest.mainModule
 import kpavlov.bank.services.KoinModule
 import org.koin.standalone.StandAloneContext.startKoin
 
-
 fun main(args: Array<String>) {
 
     startKoin(listOf(KoinModule))
