@@ -4,6 +4,7 @@ import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import kpavlov.bank.api.model.CustomerDetails
 import kpavlov.bank.domain.AccountType
+import kpavlov.bank.rest.CreateAccountRequest
 import java.math.BigDecimal
 
 object TestClient {
@@ -30,12 +31,18 @@ object TestClient {
         val requestSpecification = RestAssured
                 .given()
 
-        initialCredit?.let { requestSpecification.queryParam("initialCredit", initialCredit) }
-        type?.let { requestSpecification.queryParam("type", type) }
+//        initialCredit?.let { requestSpecification.formParam("initialCredit", initialCredit) }
+//        type?.let { requestSpecification.formParam("type", type) }
+
+
+        val req = CreateAccountRequest(initialCredit = initialCredit ?: BigDecimal.ZERO,
+                type = type ?: AccountType.CURRENT)
 
         val location = requestSpecification
-                .log().uri()
-                .log().parameters()
+                .log().all()
+//                .log().parameters()
+                .body(req)
+                .contentType(ContentType.JSON)
                 .post("/customers/{id}/accounts", customerId)
                 .then()
                 .log().headers()

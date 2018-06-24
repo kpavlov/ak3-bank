@@ -4,8 +4,10 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.locations.post
+import io.ktor.request.receive
 import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -15,6 +17,8 @@ import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.withContext
 import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
+import kpavlov.bank.domain.CustomerId
+
 
 fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
 
@@ -24,7 +28,7 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
         call.respondText("OK", ContentType.Text.Plain)
     }
 
-    get<GetCustomerRequest> {
+    get<CustomerLocation> {
         val customerId = it.customerId
         withContext(computeContext) {
             val details = customersApi.getCustomerDetails(customerId).await()
@@ -32,13 +36,19 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
         }
     }
 
-    post<CreateAccountRequest> {
-        it.initialCredit
+    post<CustomerAccountsLocation> {
+        val req = call.receive<CreateAccountRequest>()
         withContext(computeContext) {
-            val evt = accountsApi.openAccount(it.customerId, it.getInitialCredit(), it.getAccountType()).await()
+            val evt = accountsApi.openAccount(it.customerId, req.initialCredit, req.type).await()
             call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${evt.accountId}")
             call.respond(HttpStatusCode.Created)
         }
     }
 
 }
+
+@Location("/customers/{customerId}")
+data class CustomerLocation(val customerId: CustomerId)
+
+@Location("/customers/{customerId}/accounts")
+data class CustomerAccountsLocation(val customerId: CustomerId)

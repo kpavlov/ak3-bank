@@ -1,14 +1,12 @@
 package kpavlov.bank.rest
 
+import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
+import io.ktor.features.*
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.locations.Locations
@@ -28,10 +26,12 @@ fun Application.mainModule() {
     install(Locations)
     install(DefaultHeaders)
     install(CallLogging)
+    install(Compression)
     install(ContentNegotiation) {
         jackson {
             findAndRegisterModules()
             disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN)
         }
     }
     install(StatusPages) {

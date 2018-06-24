@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>kpavlov.bank simple-bank</name>
+    <name>Simple-bank API</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,16 +24,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor_${scala.version.tools}</artifactId>
             <version>${akka.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-slf4j_${scala.version.tools}</artifactId>
@@ -56,6 +50,12 @@
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-netty</artifactId>
             <version>${ktor.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.alpn</groupId>
+                    <artifactId>alpn-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.koin</groupId>
@@ -84,20 +84,15 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-testkit_${scala.version.tools}</artifactId>
-            <version>${akka.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.typesafe.akka</groupId>-->
+        <!--<artifactId>akka-testkit_${scala.version.tools}</artifactId>-->
+        <!--<version>${akka.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.koin</groupId>
             <artifactId>koin-test</artifactId>
             <version>${koin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.ktor</groupId>
-            <artifactId>ktor-server-test-host</artifactId>
-            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.kotlintest</groupId>
@@ -112,6 +107,41 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-reflect</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk7</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-server-core</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http2</artifactId>
+                <version>4.1.25.Final</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
