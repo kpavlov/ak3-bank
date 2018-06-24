@@ -3,6 +3,7 @@ package kpavlov.bank.services
 import akka.actor.ActorSystem
 import akka.pattern.PatternsCS.ask
 import kpavlov.bank.api.AccountsApi
+import kpavlov.bank.domain.AccountType
 import kpavlov.bank.domain.CustomerId
 import kpavlov.bank.services.actors.AccountCreatedEvt
 import kpavlov.bank.services.actors.CreateAccountCmd
@@ -14,13 +15,13 @@ class AccountsService(actorSystem: ActorSystem) : AbstractAkkaService(actorSyste
 
     private val log = LoggerFactory.getLogger(AccountsService::class.java)
 
-    override fun openAccount(customerId: CustomerId, initialCredit: BigDecimal): CompletionStage<AccountCreatedEvt> {
+    override fun openAccount(customerId: CustomerId, initialCredit: BigDecimal, type: AccountType): CompletionStage<AccountCreatedEvt> {
         if (initialCredit.signum() < 0) {
             throw IllegalArgumentException("Initial balance should not be negative")
         }
         val initialBalanceCents = initialCredit.movePointRight(2).longValueExact()
         val actorSelection = lookupCustomerActor(customerId)
-        val cmd = CreateAccountCmd(initialBalanceCents = initialBalanceCents)
+        val cmd = CreateAccountCmd(initialBalanceCents = initialBalanceCents, type = type)
         @Suppress("UNCHECKED_CAST")
         return ask(actorSelection, cmd, TIMEOUT) as CompletionStage<AccountCreatedEvt>
     }

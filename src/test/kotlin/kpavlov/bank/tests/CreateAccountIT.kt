@@ -42,7 +42,7 @@ class CreateAccountIT : AbstractIT() {
     @Test
     fun test1_shouldCreateAccountWithNoBalance() {
 
-        val accountId = TestClient.createAccount(tyrionId, BigDecimal.ZERO)
+        val accountId = TestClient.createAccount(tyrionId)
 
         accountId shouldBe 1
 
@@ -64,11 +64,11 @@ class CreateAccountIT : AbstractIT() {
     }
 
     @Test
-    fun test2_shouldCreateAccountWithInitialAmount() {
+    fun test2_shouldCreateSavingsAccountWithInitialAmount() {
         val initialCreditCents = (1..1000_000_00).random()
         val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
 
-        val accountId = TestClient.createAccount(tyrionId, initialCredit)
+        val accountId = TestClient.createAccount(tyrionId, initialCredit, AccountType.SAVINGS)
 
         accountId shouldBe 2
 
@@ -82,7 +82,7 @@ class CreateAccountIT : AbstractIT() {
             accounts.size shouldBe 2
             with(accounts[1]) {
                 id.shouldBeGreaterThan(0)
-                type shouldBe AccountType.CURRENT
+                type shouldBe AccountType.SAVINGS
                 timestamp.shouldNotBeBefore(startTime)
                 transactions.size shouldBe 1
                 transactions[0].amount shouldBe initialCreditCents

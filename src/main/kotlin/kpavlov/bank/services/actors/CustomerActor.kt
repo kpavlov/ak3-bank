@@ -97,6 +97,7 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
                     }
         }
         countDownLatch.await()
+        accountDetails.sortBy { it.id }
 
         return CustomerDetails(
                 id = info.id,

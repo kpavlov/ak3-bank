@@ -32,12 +32,10 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
         }
     }
 
-
-
     post<CreateAccountRequest> {
         it.initialCredit
         withContext(computeContext) {
-            val evt = accountsApi.openAccount(it.customerId, it.getInitialCredit()).await()
+            val evt = accountsApi.openAccount(it.customerId, it.getInitialCredit(), it.getAccountType()).await()
             call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${evt.accountId}")
             call.respond(HttpStatusCode.Created)
         }
