@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#mvn clean verify
+mvn clean verify
 
 java -jar \
     -ea \
