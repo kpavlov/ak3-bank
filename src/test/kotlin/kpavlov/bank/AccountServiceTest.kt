@@ -26,8 +26,6 @@ import java.time.Clock
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-const val tyrionId = "1"
-const val bronnId = "2"
 
 class AccountServiceTest : KoinTest {
 

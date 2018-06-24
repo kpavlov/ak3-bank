@@ -16,13 +16,13 @@ class Bootstrap(private val actorSystem: ActorSystem) {
     private fun createCustomersCustomer() {
 
         createCustomer(
-                id = "1",
+                id = 1,
                 firstName = "Tirion",
                 lastName = "Lannister"
         )
 
         createCustomer(
-                id = "2",
+                id = 2,
                 firstName = "Bronn",
                 lastName = "of the Blackwater"
         )

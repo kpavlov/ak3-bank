@@ -1,6 +1,6 @@
 package kpavlov.bank.domain
 
-typealias CustomerId = String
+typealias CustomerId = Int
 typealias AccountId = Int
 
 /**
