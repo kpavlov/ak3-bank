@@ -14,8 +14,12 @@ object TestClient {
     }
 
     fun getCustomerDetails(customerId: Int): CustomerDetails {
-        return RestAssured.get("/customers/{id}", customerId)
+        return RestAssured
+                .given()
+                .log().uri()
+                .get("/customers/{id}", customerId)
                 .then()
+                .log().body()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .extract().body().`as`(CustomerDetails::class.java)
@@ -29,7 +33,8 @@ object TestClient {
             requestSpecification.queryParam("initialCredit", initialCredit)
         }
         val location = requestSpecification
-                .log().all()
+                .log().uri()
+                .log().parameters()
                 .post("/customers/{id}/accounts", customerId)
                 .then()
                 .log().headers()
