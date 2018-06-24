@@ -40,11 +40,9 @@ class CreateAccountIT : AbstractIT() {
     }
 
     @Test
-    fun test1_shouldCreateAccountWithInitialAmount() {
-        val initialCreditCents = (1..1000_000_00).random()
-        val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
+    fun test1_shouldCreateAccountWithNoBalance() {
 
-        val accountId = TestClient.createAccount(tyrionId, initialCredit)
+        val accountId = TestClient.createAccount(tyrionId, BigDecimal.ZERO)
 
         accountId shouldBe 1
 
@@ -54,21 +52,42 @@ class CreateAccountIT : AbstractIT() {
             id.shouldBe(kpavlov.bank.tyrionId)
             firstName.shouldBe("Tirion")
             lastName.shouldBe("Lannister")
-            balance.compareTo(initialCredit) shouldBe 0
+            balance.compareTo(BigDecimal.ZERO) shouldBe 0
             accounts.size shouldBe 1
             with(accounts[0]) {
                 id.shouldBeGreaterThan(0)
                 type shouldBe AccountType.CURRENT
                 timestamp.shouldNotBeBefore(startTime)
-                transactions.size shouldBe 1
-                transactions[0].amount
+                transactions.size shouldBe 0
             }
         }
     }
 
     @Test
     fun test2_shouldCreateAccountWithInitialAmount() {
+        val initialCreditCents = (1..1000_000_00).random()
+        val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
 
+        val accountId = TestClient.createAccount(tyrionId, initialCredit)
+
+        accountId shouldBe 2
+
+        val customerDetails = TestClient.getCustomerDetails(tyrionId)
+        with(customerDetails) {
+            shouldNotBe(null)
+            id.shouldBe(kpavlov.bank.tyrionId)
+            firstName.shouldBe("Tirion")
+            lastName.shouldBe("Lannister")
+            balance.compareTo(initialCredit) shouldBe 0
+            accounts.size shouldBe 2
+            with(accounts[1]) {
+                id.shouldBeGreaterThan(0)
+                type shouldBe AccountType.CURRENT
+                timestamp.shouldNotBeBefore(startTime)
+                transactions.size shouldBe 1
+                transactions[0].amount shouldBe initialCreditCents
+            }
+        }
     }
 
 

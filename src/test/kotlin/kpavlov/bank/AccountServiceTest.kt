@@ -20,7 +20,6 @@ import org.koin.standalone.StandAloneContext.closeKoin
 import org.koin.standalone.StandAloneContext.startKoin
 import org.koin.standalone.inject
 import org.koin.test.KoinTest
-import org.koin.test.dryRun
 import java.math.BigDecimal
 import java.time.Clock
 import java.time.OffsetDateTime
@@ -56,8 +55,7 @@ class AccountServiceTest : KoinTest {
     }
 
     @Test
-    fun shouldStart() {
-        dryRun()
+    fun shouldGetCustomerDetails() {
 
         val bronn = getCustomerDetails(bronnId)
         with(bronn) {
@@ -71,7 +69,7 @@ class AccountServiceTest : KoinTest {
     }
 
     @Test
-    fun shouldOpenAccount() {
+    fun shouldOpenAccountWithBalance() {
 
         val initialCreditCents = (1..1000_000_00).random()
         val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
@@ -95,7 +93,7 @@ class AccountServiceTest : KoinTest {
                 type shouldBe AccountType.CURRENT
                 timestamp.shouldNotBeBefore(startTime)
                 transactions.size shouldBe 1
-                transactions[0].amount
+                transactions[0].amount shouldBe initialCreditCents
             }
         }
 
