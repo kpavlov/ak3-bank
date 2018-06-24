@@ -13,3 +13,9 @@ Also, if `initialCredit` is not 0, a transaction will be sent to the new account
 Another Endpoint will output the user information showing _Name_, _Surname_, _balance_, and transactions of the accounts.
 
 For simplicity, the data is saved in memory and not actually persisted, so that the solution could be easier tested.
+
+## Build instructions
+
+To build with maven and start:
+
+    ./build-and-start.sh

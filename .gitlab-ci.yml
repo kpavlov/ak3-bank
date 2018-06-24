@@ -1,4 +1,4 @@
-#image: maven:3-jdk-10-slim
+image: maven:3-jdk-10-slim
 
 variables:
   # This will supress any download for dependencies and plugins or upload messages which would clutter the console log.
