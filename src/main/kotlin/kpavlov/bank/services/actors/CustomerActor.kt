@@ -87,11 +87,11 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
         val countDownLatch = CountDownLatch(accounts.size)
         val accountDetails = mutableListOf<AccountStatement>()
         for (entry in accounts) {
-            PatternsCS.ask(entry.value, GetStatementCmd(), ACTOR_TIMEOUT)
+            PatternsCS.ask(entry.value, GetAccountStatementCmd(), ACTOR_TIMEOUT)
                     .whenComplete { evt, t ->
                         handleActorResponse(t, "Can't request account statement",
                                 evt, AccountStatementEvt::class.java) { e ->
-                            accountDetails.add(e.accountDetails)
+                            accountDetails.add(e.accountStatement)
                             countDownLatch.countDown()
                         }
                     }

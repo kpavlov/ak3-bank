@@ -28,7 +28,10 @@ class CreateAccountIT : AbstractIT() {
 
     @Test
     fun test0_shouldGetAccountDetailsBeforeUpdate() {
+        // when
         val customerDetails = TestClient.getCustomerDetails(tyrionId)
+
+        // then
         with(customerDetails) {
             shouldNotBe(null)
             id.shouldBe(kpavlov.bank.tyrionId)
@@ -42,8 +45,10 @@ class CreateAccountIT : AbstractIT() {
     @Test
     fun test1_shouldCreateAccountWithNoBalance() {
 
+        // when
         val accountId = TestClient.createAccount(tyrionId)
 
+        // then
         accountId shouldBe 1
 
         val customerDetails = TestClient.getCustomerDetails(tyrionId)
@@ -68,8 +73,10 @@ class CreateAccountIT : AbstractIT() {
         val initialCreditCents = (1..1000_000_00).random()
         val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
 
+        // when
         val accountId = TestClient.createAccount(tyrionId, initialCredit, AccountType.SAVINGS)
 
+        // then
         accountId shouldBe 2
 
         val customerDetails = TestClient.getCustomerDetails(tyrionId)
@@ -87,6 +94,24 @@ class CreateAccountIT : AbstractIT() {
                 transactions.size shouldBe 1
                 transactions[0].amount shouldBe initialCreditCents
             }
+        }
+    }
+
+    @Test
+    fun test3_shouldGetAccountStatement() {
+        //given
+        val accountId1 = 2
+        // when
+        val accountStatement = TestClient.getAccountStatement(tyrionId, accountId1)
+
+        // then
+        with(accountStatement) {
+            shouldNotBe(null)
+            id shouldBe accountId1
+            type shouldBe AccountType.SAVINGS
+            timestamp.shouldNotBeBefore(startTime)
+            transactions.size shouldBe 1
+            transactions[0].amount.shouldBeGreaterThan(1)
         }
     }
 

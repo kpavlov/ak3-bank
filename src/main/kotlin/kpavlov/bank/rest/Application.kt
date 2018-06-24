@@ -26,7 +26,9 @@ fun Application.mainModule() {
     install(Locations)
     install(DefaultHeaders)
     install(CallLogging)
-    install(Compression)
+    install(Compression) {
+        gzip()
+    }
     install(ContentNegotiation) {
         jackson {
             findAndRegisterModules()

@@ -17,6 +17,7 @@ import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.withContext
 import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
+import kpavlov.bank.domain.AccountId
 import kpavlov.bank.domain.CustomerId
 
 
@@ -45,6 +46,14 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
         }
     }
 
+    get<CustomerAccountLocation> {
+        withContext(computeContext) {
+            val evt = accountsApi.getAccountStatement(it.customerId, it.accountId).await()
+            call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${it.accountId}")
+            call.respond(HttpStatusCode.OK, evt.accountStatement)
+        }
+    }
+
 }
 
 @Location("/customers/{customerId}")
@@ -52,3 +61,6 @@ data class CustomerLocation(val customerId: CustomerId)
 
 @Location("/customers/{customerId}/accounts")
 data class CustomerAccountsLocation(val customerId: CustomerId)
+
+@Location("/customers/{customerId}/accounts/{accountId}")
+data class CustomerAccountLocation(val customerId: CustomerId, val accountId: AccountId)

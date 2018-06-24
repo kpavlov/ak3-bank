@@ -13,13 +13,13 @@ import java.util.*
 
 private val clock = Clock.systemUTC()
 
-class GetStatementCmd
+class GetAccountStatementCmd
 
 data class AccountBalanceUpdatedEvt(val id: AccountId,
                                     val balanceDeltaInCents: Long,
                                     val balanceInCents: Long)
 
-data class AccountStatementEvt(val accountDetails: kpavlov.bank.api.model.AccountStatement)
+data class AccountStatementEvt(val accountStatement: AccountStatement)
 
 class AccountActor(private val id: AccountId, private val type: AccountType) : AbstractLoggingActor() {
 
@@ -32,7 +32,7 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
                     log().info("Received {}", cmd)
                     createTransaction(cmd, sender)
                 }
-                .match(GetStatementCmd::class.java) { cmd ->
+                .match(GetAccountStatementCmd::class.java) { cmd ->
                     log().info("Received {}", cmd)
                     val statementEvt = AccountStatementEvt(
                             AccountStatement(id = id,

@@ -2,6 +2,7 @@ package kpavlov.bank.tests
 
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
+import kpavlov.bank.api.model.AccountStatement
 import kpavlov.bank.api.model.CustomerDetails
 import kpavlov.bank.domain.AccountType
 import kpavlov.bank.rest.CreateAccountRequest
@@ -19,7 +20,7 @@ object TestClient {
         return RestAssured
                 .given()
                 .log().uri()
-                .get("/customers/{id}", customerId)
+                .get("/customers/{customerId}", customerId)
                 .then()
                 .log().body()
                 .statusCode(200)
@@ -27,23 +28,31 @@ object TestClient {
                 .extract().body().`as`(CustomerDetails::class.java)
     }
 
+    fun getAccountStatement(customerId: Int, accountId: Int): AccountStatement {
+        return RestAssured
+                .given()
+                .log().uri()
+                .get("/customers/{customerId}/accounts/{accountId}", customerId, accountId)
+                .then()
+                .log().body()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().body().`as`(AccountStatement::class.java)
+    }
+
     fun createAccount(customerId: Int, initialCredit: BigDecimal? = null, type: AccountType? = null): Int {
         val requestSpecification = RestAssured
                 .given()
-
-//        initialCredit?.let { requestSpecification.formParam("initialCredit", initialCredit) }
-//        type?.let { requestSpecification.formParam("type", type) }
-
 
         val req = CreateAccountRequest(initialCredit = initialCredit ?: BigDecimal.ZERO,
                 type = type ?: AccountType.CURRENT)
 
         val location = requestSpecification
-                .log().all()
-//                .log().parameters()
+                .log().uri()
+                .log().body()
                 .body(req)
                 .contentType(ContentType.JSON)
-                .post("/customers/{id}/accounts", customerId)
+                .post("/customers/{customerId}/accounts", customerId)
                 .then()
                 .log().headers()
                 .statusCode(201)
