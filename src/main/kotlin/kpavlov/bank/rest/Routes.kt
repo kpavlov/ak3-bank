@@ -18,7 +18,10 @@ import kotlinx.coroutines.experimental.withContext
 import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
 import kpavlov.bank.domain.AccountId
+import kpavlov.bank.domain.AccountType
 import kpavlov.bank.domain.CustomerId
+import kpavlov.bank.rest.v1.model.CreateAccountRequest
+import java.math.BigDecimal
 
 
 fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
@@ -39,8 +42,13 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
 
     post<CustomerAccountsLocation> {
         val req = call.receive<CreateAccountRequest>()
+        val type = when (req.type) {
+            kpavlov.bank.rest.v1.model.AccountType.SAVINGS -> AccountType.SAVINGS
+            kpavlov.bank.rest.v1.model.AccountType.CURRENT -> AccountType.CURRENT
+            null -> AccountType.CURRENT
+        }
         withContext(computeContext) {
-            val evt = accountsApi.openAccount(it.customerId, req.initialCredit, req.type).await()
+            val evt = accountsApi.openAccount(it.customerId, req.initialCredit ?: BigDecimal.ZERO, type).await()
             call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${evt.accountId}")
             call.respond(HttpStatusCode.Created)
         }
