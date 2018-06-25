@@ -25,6 +25,8 @@ paths:
             text/plain:
               schema:
                 type: string
+        500:
+          $ref: '#/components/responses/500InternalServerErrorResponse'
 
   '/customers/{customerId}':
     get:
@@ -38,6 +40,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerDetails'
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        404:
+          $ref: '#/components/responses/404NotFoundResponse'
+        500:
+          $ref: '#/components/responses/500InternalServerErrorResponse'
 
   '/customers/{customerId}/accounts':
     post:
@@ -56,6 +64,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerDetails'
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        404:
+          $ref: '#/components/responses/404NotFoundResponse'
+        500:
+          $ref: '#/components/responses/500InternalServerErrorResponse'
 
   '/customers/{customerId}/accounts/{accountId}':
     get:
@@ -70,6 +84,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountStatement'
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        404:
+          $ref: '#/components/responses/404NotFoundResponse'
+        500:
+          $ref: '#/components/responses/500InternalServerErrorResponse'
 
 components:
   parameters:
@@ -89,6 +109,26 @@ components:
         type: integer
         minimum: 1
       description: Account ID
+
+  responses:
+    400BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    404NotFoundResponse:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    500InternalServerErrorResponse:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
 
   schemas:
 
@@ -191,8 +231,17 @@ components:
         type:
           $ref: '#/components/schemas/AccountType'
 
-
-
-
-
-      
+    ErrorResponse:
+      required:
+        - status
+        - title
+      properties:
+        status:
+          description: HTTP status code
+          type: integer
+        title:
+          description: Generic error description
+          type: string
+        detail:
+          description: Specific error description
+          type: string
