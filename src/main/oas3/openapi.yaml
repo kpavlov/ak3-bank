@@ -84,6 +84,10 @@ components:
       type: string
       format: uuid
 
+    OffsetDateTime:
+      type: string
+      format: dateTime
+
     AccountType:
       type: string
       enum:
@@ -107,8 +111,7 @@ components:
           minimum: 0
           exclusiveMinimum: true
         timestamp:
-          type: string
-          format: date-time
+          $ref: '#/components/schemas/OffsetDateTime'
         counterpartyAccountRef:
           type: string
 
@@ -117,6 +120,7 @@ components:
         - id
         - type
         - balance
+        - timestamp
         - transactions
       properties:
         id:
@@ -126,6 +130,8 @@ components:
         balance:
           type: number
           minimum: 0
+        timestamp:
+          $ref: '#/components/schemas/OffsetDateTime'
         transactions:
           type: array
           items:
@@ -162,5 +168,9 @@ components:
           default: 0
         type:
           $ref: '#/components/schemas/AccountType'
+
+
+
+
 
       

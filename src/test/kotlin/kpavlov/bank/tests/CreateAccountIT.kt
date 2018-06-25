@@ -4,8 +4,8 @@ import io.kotlintest.matchers.date.shouldNotBeBefore
 import io.kotlintest.matchers.numerics.shouldBeGreaterThan
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
-import kpavlov.bank.domain.AccountType
 import kpavlov.bank.random
+import kpavlov.bank.rest.v1.model.AccountType
 import kpavlov.bank.tyrionId
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -92,7 +92,7 @@ class CreateAccountIT : AbstractIT() {
                 type shouldBe AccountType.SAVINGS
                 timestamp.shouldNotBeBefore(startTime)
                 transactions.size shouldBe 1
-                transactions[0].amount shouldBe initialCreditCents
+                transactions[0].amount shouldBe initialCredit
             }
         }
     }
@@ -111,7 +111,7 @@ class CreateAccountIT : AbstractIT() {
             type shouldBe AccountType.SAVINGS
             timestamp.shouldNotBeBefore(startTime)
             transactions.size shouldBe 1
-            transactions[0].amount.shouldBeGreaterThan(1)
+            transactions[0].amount.signum() shouldBe 1
         }
     }
 

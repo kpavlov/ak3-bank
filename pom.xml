@@ -162,8 +162,8 @@
                         </goals>
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/oas3/openapi.yaml</inputSpec>
-                            <modelPackage>kpavlov.rest.v1.model</modelPackage>
-                            <apiPackage>kpavlov.rest.v1</apiPackage>
+                            <modelPackage>kpavlov.bank.rest.v1.model</modelPackage>
+                            <apiPackage>kpavlov.bank.rest.v1</apiPackage>
                             <configHelp>false</configHelp>
                             <language>kotlin-server</language>
                             <generateApiDocumentation>false</generateApiDocumentation>
@@ -176,6 +176,7 @@
                                 <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
                             </configOptions>
                             <importMappings>
+                                <importMapping>OffsetDateTime=java.time.OffsetDateTime</importMapping>
                                 <!--<importMapping>CustomerId=..domain.CustomerId</importMapping>-->
                                 <!--<importMapping>Currency=java.util.Currency</importMapping>-->
                                 <!--<importMapping>GrantType=com.payconiq.sct.model.dto.GrantType</importMapping>-->

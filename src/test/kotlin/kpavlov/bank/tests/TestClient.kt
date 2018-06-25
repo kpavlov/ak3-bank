@@ -2,10 +2,10 @@ package kpavlov.bank.tests
 
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
-import kpavlov.bank.api.model.AccountStatement
-import kpavlov.bank.api.model.CustomerDetails
-import kpavlov.bank.domain.AccountType
-import kpavlov.bank.rest.CreateAccountRequest
+import kpavlov.bank.rest.v1.model.AccountStatement
+import kpavlov.bank.rest.v1.model.AccountType
+import kpavlov.bank.rest.v1.model.CreateAccountRequest
+import kpavlov.bank.rest.v1.model.CustomerDetails
 import java.math.BigDecimal
 
 object TestClient {

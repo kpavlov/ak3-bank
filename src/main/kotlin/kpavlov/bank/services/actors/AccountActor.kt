@@ -34,10 +34,15 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
                 }
                 .match(GetAccountStatementCmd::class.java) { cmd ->
                     log().info("Received {}", cmd)
+                    val transactionsDefensiveCopy = transactions
+                            .map { it -> it.copy() }
+                            .toList()
+
                     val statementEvt = AccountStatementEvt(
                             AccountStatement(id = id,
                                     type = type,
-                                    transactions = Collections.unmodifiableList(transactions),
+                                    balance = balance.toBigDecimal().movePointLeft(2),
+                                    transactions = transactionsDefensiveCopy,
                                     timestamp = clock.instant().atOffset(ZoneOffset.UTC)
                             ))
                     sender.tell(statementEvt, self)
@@ -48,6 +53,7 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
 
     private fun createTransaction(cmd: CreateTransactionCmd, toNotify: ActorRef) {
         val tx = Transaction(
+                id = UUID.randomUUID(),
                 accountId = id,
                 amount = cmd.amountCents,
                 timestamp = clock.instant().atOffset(ZoneOffset.UTC),

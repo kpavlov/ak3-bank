@@ -33,7 +33,7 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
         val customerId = it.customerId
         withContext(computeContext) {
             val details = customersApi.getCustomerDetails(customerId).await()
-            call.respond(details)
+            call.respond(convertCustomerDetails(details))
         }
     }
 
@@ -50,7 +50,7 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
         withContext(computeContext) {
             val evt = accountsApi.getAccountStatement(it.customerId, it.accountId).await()
             call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${it.accountId}")
-            call.respond(HttpStatusCode.OK, evt.accountStatement)
+            call.respond(HttpStatusCode.OK, convertAccountStatement(evt.accountStatement))
         }
     }
 
