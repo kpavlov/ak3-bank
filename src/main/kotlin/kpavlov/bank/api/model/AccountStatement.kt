@@ -8,6 +8,6 @@ data class AccountStatement(
         val id: AccountId,
         val type: AccountType,
         val balance: Long,
-        val transactions: List<Transaction>,
-        val timestamp: OffsetDateTime
+        val timestamp: OffsetDateTime,
+        val transactions: List<Transaction>
 )

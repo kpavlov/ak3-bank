@@ -12,10 +12,19 @@ Also, if `initialCredit` is not 0, a transaction will be sent to the new account
 
 Another Endpoint will output the user information showing _Name_, _Surname_, _balance_, and transactions of the accounts.
 
-For simplicity, the data is saved in memory and not actually persisted, so that the solution could be easier tested.
+## Assumptions
+
+* For simplicity, the data is saved in memory and not actually persisted, so that the solution could be easier tested.
+* All accounts are opened in the same currency (which is not always a case in real life)
+* Application security is skipped: no TLS, full logging.
+* There are no restriction for the customer to open new account. 
+    The restriction could be maxActiveAccounts or max deposit amount. Now it's omitted.
+
 
 ## Build instructions
 
 To build with maven and start:
 
     ./build-and-start.sh
+    
+
