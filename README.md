@@ -16,7 +16,7 @@ Another Endpoint will output the user information showing _Name_, _Surname_, _ba
 
 * For simplicity, the data is saved in memory and not actually persisted, so that the solution could be easier tested.
 * All accounts are opened in the same currency (which is not always a case in real life)
-* Application security is skipped: no TLS, full logging.
+* Application security is skipped: no Authentication, Authorization and TLS. Full logging is enabled.
 * There are no restriction for the customer to open new account. 
     The restriction could be maxActiveAccounts or max deposit amount. Now it's omitted.
 
