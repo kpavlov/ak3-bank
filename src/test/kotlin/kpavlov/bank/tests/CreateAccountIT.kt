@@ -4,9 +4,12 @@ import io.kotlintest.matchers.date.shouldNotBeBefore
 import io.kotlintest.matchers.numerics.shouldBeGreaterThan
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldNotBe
+import io.restassured.RestAssured
+import io.restassured.http.ContentType
 import kpavlov.bank.random
 import kpavlov.bank.rest.v1.model.AccountType
 import kpavlov.bank.tyrionId
+import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Before
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -113,6 +116,43 @@ class CreateAccountIT : AbstractIT() {
             transactions.size shouldBe 1
             transactions[0].amount.signum() shouldBe 1
         }
+    }
+
+    @Test
+    fun test4_shouldGet404WhenCustomerNotFound() {
+        // when
+        val customerId = 999
+        RestAssured
+                .given()
+                .log().uri()
+                .get("/v1/customers/{customerId}", customerId)
+                .then()
+                .assertThat()
+                .log().body()
+                .statusCode(404)
+                .contentType(ContentType.JSON)
+                .body("status", equalTo(404))
+                .body("title", equalTo("Not Found"))
+
+    }
+
+    @Test
+    fun test5_shouldGet404WhenAccountNotFound() {
+        // when
+        val customerId = tyrionId
+        val accountId = 999
+        RestAssured
+                .given()
+                .log().uri()
+                .get("/v1/customers/{customerId}/accounts/{accountId}", customerId, accountId)
+                .then()
+                .assertThat()
+                .log().body()
+                .statusCode(404)
+                .contentType(ContentType.JSON)
+                .body("status", equalTo(404))
+                .body("title", equalTo("Not Found"))
+
     }
 
 

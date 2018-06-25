@@ -1,5 +1,6 @@
 package kpavlov.bank.rest
 
+import akka.pattern.AskTimeoutException
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
@@ -14,8 +15,8 @@ import io.ktor.pipeline.PipelineContext
 import io.ktor.response.respond
 import io.ktor.routing.routing
 import kpavlov.bank.api.AccountsApi
-import kpavlov.bank.api.CustomerNotFoundException
 import kpavlov.bank.api.CustomersApi
+import kpavlov.bank.rest.v1.model.ErrorResponse
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 
@@ -39,8 +40,8 @@ fun Application.mainModule() {
     install(StatusPages) {
         exception<Throwable> { cause ->
             when (cause) {
-                is CustomerNotFoundException ->
-                    handleException(cause, HttpStatusCode.NotFound)
+                is AskTimeoutException ->
+                    handleException(ResourceNotFoundException(), HttpStatusCode.NotFound)
                 else ->
                     handleException(cause)
             }
@@ -58,9 +59,10 @@ fun Application.mainModule() {
 
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleException(cause: Throwable,
                                                                            httpStatusCode: HttpStatusCode = HttpStatusCode.InternalServerError) {
-    log.error("Error", cause)
+    when {
+        httpStatusCode.value < 500 -> log.info("Can't handle request", cause)
+        else -> log.error("Error", cause)
+    }
     call.respond(httpStatusCode, ErrorResponse(httpStatusCode.value, httpStatusCode.description, cause.message))
 }
-
-private data class ErrorResponse(val status: Int, val title: String, val detail: String?)
 
