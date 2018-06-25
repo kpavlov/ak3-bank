@@ -56,11 +56,11 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
 
 }
 
-@Location("/customers/{customerId}")
+@Location("/v1/customers/{customerId}")
 data class CustomerLocation(val customerId: CustomerId)
 
-@Location("/customers/{customerId}/accounts")
+@Location("/v1/customers/{customerId}/accounts")
 data class CustomerAccountsLocation(val customerId: CustomerId)
 
-@Location("/customers/{customerId}/accounts/{accountId}")
+@Location("/v1/customers/{customerId}/accounts/{accountId}")
 data class CustomerAccountLocation(val customerId: CustomerId, val accountId: AccountId)

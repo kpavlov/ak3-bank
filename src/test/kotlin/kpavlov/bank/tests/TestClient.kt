@@ -13,6 +13,7 @@ object TestClient {
 
     init {
         RestAssured.baseURI = System.getProperty("sut.url", "http://localhost:8080")
+        RestAssured.basePath = "/v1"
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
     }
 
