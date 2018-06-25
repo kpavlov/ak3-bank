@@ -120,39 +120,27 @@ class CreateAccountIT : AbstractIT() {
 
     @Test
     fun test4_shouldGet404WhenCustomerNotFound() {
-        // when
-        val customerId = 999
-        RestAssured
-                .given()
-                .log().uri()
-                .get("/v1/customers/{customerId}", customerId)
-                .then()
-                .assertThat()
-                .log().body()
-                .statusCode(404)
-                .contentType(ContentType.JSON)
-                .body("status", equalTo(404))
-                .body("title", equalTo("Not Found"))
-
+        verify404Response("/customers/{customerId}", mapOf(Pair("customerId", 999)))
     }
 
     @Test
     fun test5_shouldGet404WhenAccountNotFound() {
-        // when
-        val customerId = tyrionId
-        val accountId = 999
+        verify404Response("/customers/{customerId}/accounts/{accountId}", mapOf(
+                Pair("customerId", tyrionId), Pair("accountId", 999)))
+    }
+
+    private fun verify404Response(path: String, params: Map<String, *>) {
         RestAssured
                 .given()
                 .log().uri()
-                .get("/v1/customers/{customerId}/accounts/{accountId}", customerId, accountId)
+                .get(path, params)
                 .then()
                 .assertThat()
-                .log().body()
+                .log().all()
                 .statusCode(404)
                 .contentType(ContentType.JSON)
                 .body("status", equalTo(404))
                 .body("title", equalTo("Not Found"))
-
     }
 
 

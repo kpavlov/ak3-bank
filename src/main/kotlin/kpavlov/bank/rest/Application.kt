@@ -8,10 +8,12 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.*
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.locations.Locations
 import io.ktor.pipeline.PipelineContext
+import io.ktor.response.defaultTextContentType
 import io.ktor.response.respond
 import io.ktor.routing.routing
 import kpavlov.bank.api.AccountsApi
@@ -63,6 +65,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleException(cause
         httpStatusCode.value < 500 -> log.info("Can't handle request", cause)
         else -> log.error("Error", cause)
     }
+    call.defaultTextContentType(ContentType("application", "json"))
     call.respond(httpStatusCode, ErrorResponse(httpStatusCode.value, httpStatusCode.description, cause.message))
 }
 
