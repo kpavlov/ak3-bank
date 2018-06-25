@@ -1,0 +1,166 @@
+openapi: 3.0.1
+info:
+  title: Sample Bank API
+  contact:
+    name: API Support
+    url: http://www.example.com/support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+
+servers:
+- url: http://127.0.0.1:8080/v1
+  description: Development server
+
+paths:
+  '/':
+    get:
+      operationId: healthcheck
+      responses:
+        200:
+          description: A simple string response
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  '/customers/{customerId}':
+    get:
+      operationId: getCustomerDetails
+      parameters:
+        - $ref: '#/components/parameters/customerIdParam'
+      responses:
+        200:
+          description: Customer with acconunts & transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDetails'
+
+  '/customers/{customerId}/accounts':
+    post:
+      operationId: createAccount
+      parameters:
+        - $ref: '#/components/parameters/customerIdParam'
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+      responses:
+        200:
+          description: Customer with acconunts & transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDetails'
+
+components:
+  parameters:
+    customerIdParam:
+      in: path
+      name: customerId
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      description: Customer ID
+
+  schemas:
+
+    CustomerId:
+      type: integer
+      format: int32
+      minimum: 1
+
+    AccountId:
+      type: integer
+      format: int32
+      minimum: 1
+
+    TransactionId:
+      type: string
+      format: uuid
+
+    AccountType:
+      type: string
+      enum:
+        - CURRENT
+        - SAVINGS
+      default: CURRENT
+
+    Transaction:
+      required:
+        - id
+        - accountId
+        - amount
+        - timestamp
+      properties:
+        id:
+          $ref: '#/components/schemas/TransactionId'
+        accountId:
+          $ref: '#/components/schemas/AccountId'
+        amount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+        timestamp:
+          type: string
+          format: date-time
+        counterpartyAccountRef:
+          type: string
+
+    AccountStatement:
+      required:
+        - id
+        - type
+        - balance
+        - transactions
+      properties:
+        id:
+          $ref: '#/components/schemas/AccountId'
+        type:
+          $ref: '#/components/schemas/AccountType'
+        balance:
+          type: number
+          minimum: 0
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+
+    CustomerDetails:
+      type: object
+      required:
+        - id
+        - firstName
+        - lastName
+        - balance
+        - accounts
+      properties:
+        id:
+          $ref: '#/components/schemas/CustomerId'
+        firstName:
+          type: string
+        lastName:
+          type: string
+        balance:
+          type: number
+          minimum: 0
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountStatement'
+
+    CreateAccountRequest:
+      properties:
+        initialCredit:
+          type: number
+          minimum: 1
+          default: 0
+        type:
+          $ref: '#/components/schemas/AccountType'
+
+      

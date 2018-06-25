@@ -20,6 +20,7 @@
         <akka.version>2.5.13</akka.version>
         <scala.version.tools>2.12</scala.version.tools>
         <jackson.version>2.9.4</jackson.version>
+        <swagger.codegen.version>3.0.0-rc1</swagger.codegen.version>
     </properties>
 
     <dependencies>
@@ -148,6 +149,43 @@
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
 
         <plugins>
+            <plugin>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-codegen-maven-plugin</artifactId>
+                <version>${swagger.codegen.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-java-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/oas3/openapi.yaml</inputSpec>
+                            <modelPackage>kpavlov.rest.v1.model</modelPackage>
+                            <apiPackage>kpavlov.rest.v1</apiPackage>
+                            <configHelp>false</configHelp>
+                            <language>kotlin-server</language>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <!-- swagger-codegen template is not mature enough yet -->
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <languageSpecificPrimitives>true</languageSpecificPrimitives>
+                            <configOptions>
+                                <enumPropertyNaming>UPPERCASE</enumPropertyNaming>
+                            </configOptions>
+                            <importMappings>
+                                <!--<importMapping>CustomerId=..domain.CustomerId</importMapping>-->
+                                <!--<importMapping>Currency=java.util.Currency</importMapping>-->
+                                <!--<importMapping>GrantType=com.payconiq.sct.model.dto.GrantType</importMapping>-->
+                                <!--<importMapping>IBAN=com.payconiq.commons.domain.IBAN</importMapping>-->
+                                <!--<importMapping>TokenType=com.payconiq.sct.model.dto.TokenType</importMapping>-->
+                            </importMappings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
