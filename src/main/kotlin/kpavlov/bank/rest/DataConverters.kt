@@ -1,8 +1,11 @@
 package kpavlov.bank.rest
 
+import kpavlov.bank.domain.AccountStatement
+import kpavlov.bank.domain.CustomerDetails
+import kpavlov.bank.domain.Transaction
 import kpavlov.bank.rest.v1.model.AccountType
 
-internal fun convertCustomerDetails(src: kpavlov.bank.api.model.CustomerDetails): kpavlov.bank.rest.v1.model.CustomerDetails {
+internal fun convertCustomerDetails(src: CustomerDetails): kpavlov.bank.rest.v1.model.CustomerDetails {
     return kpavlov.bank.rest.v1.model.CustomerDetails(
             id = src.id,
             firstName = src.firstName,
@@ -12,7 +15,7 @@ internal fun convertCustomerDetails(src: kpavlov.bank.api.model.CustomerDetails)
     )
 }
 
-internal fun convertAccountStatement(src: kpavlov.bank.api.model.AccountStatement): kpavlov.bank.rest.v1.model.AccountStatement {
+internal fun convertAccountStatement(src: AccountStatement): kpavlov.bank.rest.v1.model.AccountStatement {
     return kpavlov.bank.rest.v1.model.AccountStatement(
             id = src.id,
             type = AccountType.valueOf(src.type.name),
@@ -22,7 +25,7 @@ internal fun convertAccountStatement(src: kpavlov.bank.api.model.AccountStatemen
     )
 }
 
-private fun convertTransaction(src: kpavlov.bank.api.model.Transaction): kpavlov.bank.rest.v1.model.Transaction {
+private fun convertTransaction(src: Transaction): kpavlov.bank.rest.v1.model.Transaction {
     return kpavlov.bank.rest.v1.model.Transaction(
             id = src.id,
             accountId = src.accountId,

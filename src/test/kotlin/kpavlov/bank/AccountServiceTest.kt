@@ -8,8 +8,8 @@ import kotlinx.coroutines.experimental.future.await
 import kotlinx.coroutines.experimental.runBlocking
 import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
-import kpavlov.bank.api.model.CustomerDetails
 import kpavlov.bank.domain.AccountType
+import kpavlov.bank.domain.CustomerDetails
 import kpavlov.bank.domain.CustomerId
 import kpavlov.bank.services.KoinModule
 import org.junit.AfterClass

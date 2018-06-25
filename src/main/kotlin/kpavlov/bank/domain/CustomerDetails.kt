@@ -1,6 +1,4 @@
-package kpavlov.bank.api.model
-
-import kpavlov.bank.domain.CustomerId
+package kpavlov.bank.domain
 
 data class CustomerDetails(
         val id: CustomerId,

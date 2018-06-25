@@ -2,10 +2,10 @@ package kpavlov.bank.services
 
 import akka.actor.ActorSystem
 import akka.pattern.PatternsCS
-import kpavlov.bank.api.model.Transaction
 import kpavlov.bank.domain.AccountId
 import kpavlov.bank.domain.AccountRef
 import kpavlov.bank.domain.CustomerId
+import kpavlov.bank.domain.Transaction
 import kpavlov.bank.services.actors.CreateTransactionCmd
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
@@ -31,6 +31,7 @@ class TransactionService(actorSystem: ActorSystem) : AbstractAkkaService(actorSy
                 amountCents = amount.movePointRight(2).longValueExact(),
                 counterpartyAccountRef = counterpartyAccountRef
         )
+        @Suppress("UNCHECKED_CAST")
         return PatternsCS.ask(customerActorSelection, cmd, TIMEOUT) as CompletionStage<Transaction>
     }
 }

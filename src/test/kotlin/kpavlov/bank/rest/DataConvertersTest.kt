@@ -22,7 +22,7 @@ class DataConvertersTest : KoinTest {
         assertCustomerDetails(result, src)
     }
 
-    private fun assertCustomerDetails(actual: CustomerDetails, src: kpavlov.bank.api.model.CustomerDetails) {
+    private fun assertCustomerDetails(actual: CustomerDetails, src: kpavlov.bank.domain.CustomerDetails) {
         with(actual) {
             id shouldBe src.id
             firstName shouldBe src.firstName
@@ -47,7 +47,7 @@ class DataConvertersTest : KoinTest {
         assertAccountStatement(result, src)
     }
 
-    private fun assertAccountStatement(actual: AccountStatement, src: kpavlov.bank.api.model.AccountStatement) {
+    private fun assertAccountStatement(actual: AccountStatement, src: kpavlov.bank.domain.AccountStatement) {
         with(actual) {
             id shouldBe src.id
             type.name shouldBe src.type.name
@@ -60,7 +60,7 @@ class DataConvertersTest : KoinTest {
         }
     }
 
-    private fun assertTransaction(actual: Transaction, src: kpavlov.bank.api.model.Transaction) {
+    private fun assertTransaction(actual: Transaction, src: kpavlov.bank.domain.Transaction) {
         with(actual) {
             id shouldBe src.id
             accountId shouldBe src.accountId

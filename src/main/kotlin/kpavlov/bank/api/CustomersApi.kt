@@ -1,6 +1,6 @@
 package kpavlov.bank.api
 
-import kpavlov.bank.api.model.CustomerDetails
+import kpavlov.bank.domain.CustomerDetails
 import kpavlov.bank.domain.CustomerId
 import java.util.concurrent.CompletionStage
 

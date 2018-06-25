@@ -3,7 +3,7 @@ package kpavlov.bank.services
 import akka.actor.ActorSystem
 import akka.pattern.PatternsCS
 import kpavlov.bank.api.CustomersApi
-import kpavlov.bank.api.model.CustomerDetails
+import kpavlov.bank.domain.CustomerDetails
 import kpavlov.bank.domain.CustomerId
 import kpavlov.bank.services.actors.GetCustomerDetailsCmd
 import java.util.concurrent.CompletionStage

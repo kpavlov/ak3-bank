@@ -1,7 +1,5 @@
-package kpavlov.bank.api.model
+package kpavlov.bank.domain
 
-import kpavlov.bank.domain.AccountId
-import kpavlov.bank.domain.AccountType
 import java.time.OffsetDateTime
 
 data class AccountStatement(

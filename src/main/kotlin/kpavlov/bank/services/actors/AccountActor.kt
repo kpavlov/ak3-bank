@@ -2,11 +2,10 @@ package kpavlov.bank.services.actors
 
 import akka.actor.AbstractLoggingActor
 import akka.actor.ActorRef
-import kpavlov.bank.api.model.AccountStatement
-import kpavlov.bank.api.model.Transaction
 import kpavlov.bank.domain.AccountId
+import kpavlov.bank.domain.AccountStatement
 import kpavlov.bank.domain.AccountType
-
+import kpavlov.bank.domain.Transaction
 import java.time.Clock
 import java.time.ZoneOffset
 import java.util.*

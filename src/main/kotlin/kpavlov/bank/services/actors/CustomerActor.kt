@@ -5,8 +5,6 @@ import akka.actor.AbstractLoggingActor
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.pattern.PatternsCS
-import kpavlov.bank.api.model.AccountStatement
-import kpavlov.bank.api.model.CustomerDetails
 import kpavlov.bank.domain.*
 import java.util.concurrent.CountDownLatch
 
@@ -54,9 +52,7 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
         log().debug("Account balance updated. Updating customer balance. {}", evt)
         balanceCents += evt.balanceDeltaInCents
         val balanceUpdatedEvt = CustomerBalanceUpdatedEvt(info.id, balanceCents)
-        toNotify?.let {
-            it.tell(balanceUpdatedEvt, self)
-        }
+        toNotify?.tell(balanceUpdatedEvt, self)
         context.system.eventStream().publish(balanceUpdatedEvt)
     }
 
