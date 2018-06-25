@@ -6,7 +6,7 @@ import kpavlov.bank.domain.AccountId
 import kpavlov.bank.domain.AccountRef
 import kpavlov.bank.domain.CustomerId
 import kpavlov.bank.domain.Transaction
-import kpavlov.bank.services.actors.CreateTransactionCmd
+import kpavlov.bank.services.actors.CreateTransactionCommand
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.util.concurrent.CompletionStage
@@ -26,7 +26,7 @@ class TransactionService(actorSystem: ActorSystem) : AbstractAkkaService(actorSy
                  amount: BigDecimal,
                  counterpartyAccountRef: AccountRef?): CompletionStage<Transaction> {
         val customerActorSelection = lookupCustomerActor(customerId)
-        val cmd = CreateTransactionCmd(
+        val cmd = CreateTransactionCommand(
                 accountId = accountId,
                 amountCents = amount.movePointRight(2).longValueExact(),
                 counterpartyAccountRef = counterpartyAccountRef

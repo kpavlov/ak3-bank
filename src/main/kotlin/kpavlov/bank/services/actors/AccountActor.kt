@@ -2,6 +2,7 @@ package kpavlov.bank.services.actors
 
 import akka.actor.AbstractLoggingActor
 import akka.actor.ActorRef
+import kpavlov.bank.api.AccountStatementEvt
 import kpavlov.bank.domain.AccountId
 import kpavlov.bank.domain.AccountStatement
 import kpavlov.bank.domain.AccountType
@@ -12,13 +13,11 @@ import java.util.*
 
 private val clock = Clock.systemUTC()
 
-class GetAccountStatementCmd
+class GetAccountStatementCommand
 
-data class AccountBalanceUpdatedEvt(val id: AccountId,
-                                    val balanceDeltaInCents: Long,
-                                    val balanceInCents: Long)
-
-data class AccountStatementEvt(val accountStatement: AccountStatement)
+data class AccountBalanceUpdatedEvent(val id: AccountId,
+                                      val balanceDeltaInCents: Long,
+                                      val balanceInCents: Long)
 
 class AccountActor(private val id: AccountId, private val type: AccountType) : AbstractLoggingActor() {
 
@@ -27,11 +26,11 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
 
     override fun createReceive(): Receive {
         return receiveBuilder()
-                .match(CreateTransactionCmd::class.java) { cmd ->
+                .match(CreateTransactionCommand::class.java) { cmd ->
                     log().info("Received {}", cmd)
                     createTransaction(cmd, sender)
                 }
-                .match(GetAccountStatementCmd::class.java) { cmd ->
+                .match(GetAccountStatementCommand::class.java) { cmd ->
                     log().info("Received {}", cmd)
                     val transactionsDefensiveCopy = transactions
                             .map { it -> it.copy() }
@@ -50,7 +49,7 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
                 .build()
     }
 
-    private fun createTransaction(cmd: CreateTransactionCmd, toNotify: ActorRef) {
+    private fun createTransaction(cmd: CreateTransactionCommand, toNotify: ActorRef) {
         val tx = Transaction(
                 id = UUID.randomUUID(),
                 accountId = id,
@@ -61,7 +60,7 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
         transactions.add(tx)
         balance += cmd.amountCents
 
-        val updateEvt = AccountBalanceUpdatedEvt(
+        val updateEvt = AccountBalanceUpdatedEvent(
                 id = id,
                 balanceDeltaInCents = cmd.amountCents,
                 balanceInCents = balance)

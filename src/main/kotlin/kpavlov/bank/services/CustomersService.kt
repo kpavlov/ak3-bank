@@ -5,7 +5,7 @@ import akka.pattern.PatternsCS
 import kpavlov.bank.api.CustomersApi
 import kpavlov.bank.domain.CustomerDetails
 import kpavlov.bank.domain.CustomerId
-import kpavlov.bank.services.actors.GetCustomerDetailsCmd
+import kpavlov.bank.services.actors.GetCustomerDetailsCommand
 import java.util.concurrent.CompletionStage
 
 
@@ -14,6 +14,6 @@ class CustomersService(actorSystem: ActorSystem) : AbstractAkkaService(actorSyst
     override fun getCustomerDetails(customerId: CustomerId): CompletionStage<CustomerDetails> {
         val actorSelection = lookupCustomerActor(customerId)
         @Suppress("UNCHECKED_CAST")
-        return PatternsCS.ask(actorSelection, GetCustomerDetailsCmd(), TIMEOUT) as CompletionStage<CustomerDetails>
+        return PatternsCS.ask(actorSelection, GetCustomerDetailsCommand(), TIMEOUT) as CompletionStage<CustomerDetails>
     }
 }

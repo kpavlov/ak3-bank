@@ -4,11 +4,11 @@ import akka.actor.AbstractLoggingActor
 
 const val ACTOR_TIMEOUT = 500L
 
-inline fun <reified T> AbstractLoggingActor.handleActorResponse(t: Throwable?,
-                                                                errorMessage: String = "Unexpected error",
-                                                                evt: Any?,
-                                                                clazz: Class<T>,
-                                                                block: (T) -> Unit) {
+internal inline fun <reified T> AbstractLoggingActor.handleActorResponse(t: Throwable?,
+                                                                         errorMessage: String = "Unexpected error",
+                                                                         evt: Any?,
+                                                                         clazz: Class<T>,
+                                                                         block: (T) -> Unit) {
     if (t != null) {
         log().error(t, "{}: {}", errorMessage, t.message)
     } else {
