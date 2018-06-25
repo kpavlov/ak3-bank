@@ -8,7 +8,6 @@ import akka.pattern.PatternsCS
 import kpavlov.bank.api.model.AccountStatement
 import kpavlov.bank.api.model.CustomerDetails
 import kpavlov.bank.domain.*
-import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
 
 data class CreateAccountCmd(val initialBalanceCents: Long = 0,
@@ -103,7 +102,7 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
                 id = info.id,
                 firstName = info.firstName,
                 lastName = info.lastName,
-                balance = BigDecimal(balanceCents).movePointLeft(2).setScale(2),// not always 2
+                balance = balanceCents,
                 accounts = accountDetails
         )
     }

@@ -41,7 +41,7 @@ class AccountActor(private val id: AccountId, private val type: AccountType) : A
                     val statementEvt = AccountStatementEvt(
                             AccountStatement(id = id,
                                     type = type,
-                                    balance = balance.toBigDecimal().movePointLeft(2),
+                                    balance = balance,
                                     transactions = transactionsDefensiveCopy,
                                     timestamp = clock.instant().atOffset(ZoneOffset.UTC)
                             ))

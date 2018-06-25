@@ -7,7 +7,7 @@ internal fun convertCustomerDetails(src: kpavlov.bank.api.model.CustomerDetails)
             id = src.id,
             firstName = src.firstName,
             lastName = src.lastName,
-            balance = src.balance,
+            balance = src.balance.toBigDecimal().movePointLeft(2),
             accounts = src.accounts.map { convertAccountStatement(it) }.toTypedArray()
     )
 }
@@ -16,7 +16,7 @@ internal fun convertAccountStatement(src: kpavlov.bank.api.model.AccountStatemen
     return kpavlov.bank.rest.v1.model.AccountStatement(
             id = src.id,
             type = AccountType.valueOf(src.type.name),
-            balance = src.balance,
+            balance = src.balance.toBigDecimal().movePointLeft(2),
             timestamp = src.timestamp,
             transactions = src.transactions.map { convertTransaction(it) }.toTypedArray()
     )

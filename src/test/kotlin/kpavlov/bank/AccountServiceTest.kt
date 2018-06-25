@@ -63,7 +63,7 @@ class AccountServiceTest : KoinTest {
             id.shouldBe(bronnId)
             firstName.shouldBe("Bronn")
             lastName.shouldBe("of the Blackwater")
-            balance.longValueExact().shouldBe(0)
+            balance shouldBe 0
             accounts.size shouldBe 0
         }
     }
@@ -86,7 +86,7 @@ class AccountServiceTest : KoinTest {
             id.shouldBe(tyrionId)
             firstName.shouldBe("Tirion")
             lastName.shouldBe("Lannister")
-            balance.compareTo(initialCredit) shouldBe 0
+            balance shouldBe initialCreditCents
             accounts.size shouldBe 1
             with(accounts[0]) {
                 id.shouldBeGreaterThan(0)
