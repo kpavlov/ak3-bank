@@ -1,6 +1,8 @@
-# Simple Bank API Service
+# AK<sup>3</sup> Bank API
 
-[![pipeline status](https://gitlab.com/kpavlov/sample-bank/badges/master/pipeline.svg)](https://gitlab.com/kpavlov/sample-bank/commits/master)
+## Akka-Kotlin-Koin-Ktor (AK<sup>3</sup>) Bank API
+
+[![pipeline status](https://gitlab.com/code-workshops/ak3-bank/badges/master/pipeline.svg)](https://gitlab.com/code-workshops/ak3-bank/commits/master)
 
 The project consists of an API to be used for opening customer bank accounts and saving transactions.
 
@@ -20,6 +22,10 @@ Another Endpoint will output the user information showing _Name_, _Surname_, _ba
 * There are no restriction for the customer to open new account. 
     The restriction could be maxActiveAccounts or max deposit amount. Now it's omitted.
 
+## Implementation notes
+* [Swagger codegen](https://github.com/swagger-api/swagger-codegen) 
+  is not mature enough to generate server interfaces for Ktor server. 
+  That's why only DTO classes are generated.
 
 ## Build instructions
 
