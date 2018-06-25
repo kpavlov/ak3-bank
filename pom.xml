@@ -156,12 +156,13 @@
                 <version>${swagger.codegen.version}</version>
                 <executions>
                     <execution>
-                        <id>generate-java-api</id>
+                        <id>generate-rest-api</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <addCompileSourceRoot>false</addCompileSourceRoot>
                             <inputSpec>${project.basedir}/src/main/oas3/openapi.yaml</inputSpec>
                             <modelPackage>kpavlov.bank.rest.v1.model</modelPackage>
                             <apiPackage>kpavlov.bank.rest.v1</apiPackage>
@@ -179,6 +180,23 @@
                             <importMappings>
                                 <importMapping>OffsetDateTime=java.time.OffsetDateTime</importMapping>
                             </importMappings>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources/swagger/src/main/kotlin</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>
