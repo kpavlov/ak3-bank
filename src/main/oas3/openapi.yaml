@@ -51,11 +51,25 @@ paths:
               $ref: '#/components/schemas/CreateAccountRequest'
       responses:
         200:
-          description: Customer with acconunts & transactions
+          description: Customer with accounts & transactions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerDetails'
+
+  '/customers/{customerId}/accounts/{accountId}':
+    get:
+      operationId: getAccountStatement
+      parameters:
+        - $ref: '#/components/parameters/customerIdParam'
+        - $ref: '#/components/parameters/accountIdParam'
+      responses:
+        200:
+          description: AccountStatement with transactions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountStatement'
 
 components:
   parameters:
@@ -67,6 +81,14 @@ components:
         type: integer
         minimum: 1
       description: Customer ID
+    accountIdParam:
+      in: path
+      name: accountId
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      description: Account ID
 
   schemas:
 
