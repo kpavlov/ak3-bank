@@ -2,7 +2,7 @@
 
 ## Akka-Kotlin-Koin-Ktor (AK<sup>3</sup>) Bank API
 
-[![pipeline status](https://gitlab.com/code-workshops/ak3-bank/badges/master/pipeline.svg)](https://gitlab.com/code-workshops/ak3-bank/commits/master)
+[![Build Status](https://travis-ci.org/kpavlov/ak3-bank.svg?branch=master)](https://travis-ci.org/kpavlov/ak3-bank)
 
 The project consists of an API to be used for opening customer bank accounts and saving transactions.
 
