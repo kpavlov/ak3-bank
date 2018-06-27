@@ -1,11 +1,9 @@
 package kpavlov.bank.tests
 
+import io.kotlintest.shouldBe
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
-import kpavlov.bank.rest.v1.model.AccountStatement
-import kpavlov.bank.rest.v1.model.AccountType
-import kpavlov.bank.rest.v1.model.CreateAccountRequest
-import kpavlov.bank.rest.v1.model.CustomerDetails
+import kpavlov.bank.rest.v1.model.*
 import java.math.BigDecimal
 
 object TestClient {
@@ -39,6 +37,30 @@ object TestClient {
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .extract().body().`as`(AccountStatement::class.java)
+    }
+
+    fun createCustomer(firstName: String, lastName: String): CustomerDetails {
+        val requestSpecification = RestAssured
+                .given()
+
+        val req = CreateCustomerRequest(firstName, lastName)
+
+        val extract = requestSpecification
+                .log().uri()
+                .log().body()
+                .body(req)
+                .contentType(ContentType.JSON)
+                .post("/customers")
+                .then()
+                .log().headers()
+                .statusCode(201)
+                .extract()
+
+        val location = extract.header(io.ktor.http.HttpHeaders.Location)
+        val id = Integer.parseInt(location.takeLastWhile { ch -> ch != '/' })
+        val result = extract.body().`as`(CustomerDetails::class.java)
+        result.id shouldBe id
+        return result
     }
 
     fun createAccount(customerId: Int, initialCredit: BigDecimal? = null, type: AccountType? = null): Int {

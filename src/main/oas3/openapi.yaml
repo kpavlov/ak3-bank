@@ -28,6 +28,28 @@ paths:
         500:
           $ref: '#/components/responses/500InternalServerErrorResponse'
 
+  '/customers':
+    post:
+      operationId: createCustomer
+      parameters:
+        - $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        201:
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDetails'
+          headers:
+            Location:
+              description: URI of newly created customer resource
+              schema:
+                type: string
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        500:
+          $ref: '#/components/responses/500InternalServerErrorResponse'
+
   '/customers/{customerId}':
     get:
       operationId: getCustomerDetails
@@ -221,6 +243,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountStatement'
+
+    CreateCustomerRequest:
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - firstName
+        - lastName
 
     CreateAccountRequest:
       properties:

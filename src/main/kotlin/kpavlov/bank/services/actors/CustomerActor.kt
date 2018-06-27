@@ -23,10 +23,15 @@ data class CreateTransactionCommand(
         val counterpartyAccountRef: AccountRef? = null
 )
 
-class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
+class CustomerActor(private val id: CustomerId, private var info: Customer) : AbstractLoggingActor() {
 
     private val accounts: MutableMap<AccountId, ActorRef> = mutableMapOf()
     private var balanceCents: Long = 0
+
+
+    override fun preStart() {
+        log().info("Starting #$id: $info")
+    }
 
     override fun createReceive(): AbstractActor.Receive {
         return receiveBuilder()
@@ -46,14 +51,14 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
                     val actorRef = accounts[cmd.accountId]
                     actorRef?.tell(cmd, self)
                 }
-                .matchAny { o -> log().warning("received unknown message: {}", o) }
+                .matchAny { o -> log().warning("Received unexpected message: {}", o) }
                 .build()
     }
 
     private fun onAccountBalanceUpdated(evt: AccountBalanceUpdatedEvent, toNotify: ActorRef? = null) {
         log().debug("Account balance updated. Updating customer balance. {}", evt)
         balanceCents += evt.balanceDeltaInCents
-        val balanceUpdatedEvt = CustomerBalanceUpdatedEvent(info.id, balanceCents)
+        val balanceUpdatedEvt = CustomerBalanceUpdatedEvent(id, balanceCents)
         toNotify?.tell(balanceUpdatedEvt, self)
         context.system.eventStream().publish(balanceUpdatedEvt)
     }
@@ -97,7 +102,7 @@ class CustomerActor(private var info: Customer) : AbstractLoggingActor() {
         accountDetails.sortBy { it.id }
 
         return CustomerDetails(
-                id = info.id,
+                id = id,
                 firstName = info.firstName,
                 lastName = info.lastName,
                 balance = balanceCents,

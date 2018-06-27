@@ -19,8 +19,10 @@ import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
 import kpavlov.bank.domain.AccountId
 import kpavlov.bank.domain.AccountType
+import kpavlov.bank.domain.Customer
 import kpavlov.bank.domain.CustomerId
 import kpavlov.bank.rest.v1.model.CreateAccountRequest
+import kpavlov.bank.rest.v1.model.CreateCustomerRequest
 import java.math.BigDecimal
 
 
@@ -30,6 +32,17 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
 
     get<Any> {
         call.respondText("OK", ContentType.Text.Plain)
+    }
+
+    post<Customers> {
+        val req = call.receive<CreateCustomerRequest>()
+        withContext(computeContext) {
+            val details = customersApi.createCustomer(
+                    Customer(firstName = req.firstName, lastName = req.lastName)
+            ).await()
+            call.response.header(HttpHeaders.Location, "/customers/${details.id}")
+            call.respond(HttpStatusCode.Created, convertCustomerDetails(details))
+        }
     }
 
     get<CustomerLocation> {
@@ -63,6 +76,9 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
     }
 
 }
+
+@Location("/v1/customers")
+class Customers
 
 @Location("/v1/customers/{customerId}")
 data class CustomerLocation(val customerId: CustomerId)

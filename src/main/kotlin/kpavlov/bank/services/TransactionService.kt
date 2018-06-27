@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import java.util.concurrent.CompletionStage
 
-class TransactionService(actorSystem: ActorSystem) : AbstractAkkaService(actorSystem = actorSystem) {
+class TransactionService(private val actorSystem: ActorSystem) : AbstractAkkaService(actorSystem = actorSystem) {
 
 
     private val log = LoggerFactory.getLogger(TransactionService::class.java)

@@ -8,7 +8,7 @@ import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import kpavlov.bank.random
 import kpavlov.bank.rest.v1.model.AccountType
-import kpavlov.bank.tyrionId
+import kpavlov.bank.rest.v1.model.CustomerId
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -24,20 +24,43 @@ class CreateAccountIT : AbstractIT() {
 
     private lateinit var startTime: OffsetDateTime
 
+    companion object {
+        private var customerId: CustomerId = -1
+    }
+
+
     @Before
     fun before() {
         startTime = Clock.systemUTC().instant().atOffset(ZoneOffset.UTC)
     }
 
     @Test
-    fun test0_shouldGetAccountDetailsBeforeUpdate() {
+    fun test0_shouldCreateAccount() {
         // when
-        val customerDetails = TestClient.getCustomerDetails(tyrionId)
+        val customerDetails = TestClient.createCustomer("Tirion", "Lannister")
+
+        customerDetails shouldNotBe null
+        customerId = customerDetails.id
 
         // then
         with(customerDetails) {
             shouldNotBe(null)
-            id.shouldBe(kpavlov.bank.tyrionId)
+            firstName shouldBe "Tirion"
+            lastName shouldBe "Lannister"
+            balance.compareTo(BigDecimal.ZERO) shouldBe 0
+            accounts.size shouldBe 0
+        }
+    }
+
+    @Test
+    fun test1_shouldGetAccountDetailsBeforeUpdate() {
+        // when
+        val customerDetails = TestClient.getCustomerDetails(customerId)
+
+        // then
+        with(customerDetails) {
+            shouldNotBe(null)
+            id.shouldBe(customerId)
             firstName.shouldBe("Tirion")
             lastName.shouldBe("Lannister")
             balance.compareTo(BigDecimal.ZERO) shouldBe 0
@@ -46,18 +69,18 @@ class CreateAccountIT : AbstractIT() {
     }
 
     @Test
-    fun test1_shouldCreateAccountWithNoBalance() {
+    fun test2_shouldCreateAccountWithNoBalance() {
 
         // when
-        val accountId = TestClient.createAccount(tyrionId)
+        val accountId = TestClient.createAccount(customerId)
 
         // then
         accountId shouldBe 1
 
-        val customerDetails = TestClient.getCustomerDetails(tyrionId)
+        val customerDetails = TestClient.getCustomerDetails(customerId)
         with(customerDetails) {
             shouldNotBe(null)
-            id.shouldBe(kpavlov.bank.tyrionId)
+            id.shouldBe(customerId)
             firstName.shouldBe("Tirion")
             lastName.shouldBe("Lannister")
             balance.compareTo(BigDecimal.ZERO) shouldBe 0
@@ -72,20 +95,20 @@ class CreateAccountIT : AbstractIT() {
     }
 
     @Test
-    fun test2_shouldCreateSavingsAccountWithInitialAmount() {
+    fun test3_shouldCreateSavingsAccountWithInitialAmount() {
         val initialCreditCents = (1..1000_000_00).random()
         val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
 
         // when
-        val accountId = TestClient.createAccount(tyrionId, initialCredit, AccountType.SAVINGS)
+        val accountId = TestClient.createAccount(customerId, initialCredit, AccountType.SAVINGS)
 
         // then
         accountId shouldBe 2
 
-        val customerDetails = TestClient.getCustomerDetails(tyrionId)
+        val customerDetails = TestClient.getCustomerDetails(customerId)
         with(customerDetails) {
             shouldNotBe(null)
-            id.shouldBe(kpavlov.bank.tyrionId)
+            id.shouldBe(customerId)
             firstName.shouldBe("Tirion")
             lastName.shouldBe("Lannister")
             balance.compareTo(initialCredit) shouldBe 0
@@ -101,11 +124,11 @@ class CreateAccountIT : AbstractIT() {
     }
 
     @Test
-    fun test3_shouldGetAccountStatement() {
+    fun test4_shouldGetAccountStatement() {
         //given
         val accountId1 = 2
         // when
-        val accountStatement = TestClient.getAccountStatement(tyrionId, accountId1)
+        val accountStatement = TestClient.getAccountStatement(customerId, accountId1)
 
         // then
         with(accountStatement) {
@@ -119,14 +142,14 @@ class CreateAccountIT : AbstractIT() {
     }
 
     @Test
-    fun test4_shouldGet404WhenCustomerNotFound() {
+    fun test5_shouldGet404WhenCustomerNotFound() {
         verify404Response("/customers/{customerId}", mapOf(Pair("customerId", 999)))
     }
 
     @Test
-    fun test5_shouldGet404WhenAccountNotFound() {
+    fun test6_shouldGet404WhenAccountNotFound() {
         verify404Response("/customers/{customerId}/accounts/{accountId}", mapOf(
-                Pair("customerId", tyrionId), Pair("accountId", 999)))
+                Pair("customerId", customerId), Pair("accountId", 999)))
     }
 
     private fun verify404Response(path: String, params: Map<String, *>) {
