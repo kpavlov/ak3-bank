@@ -10,4 +10,4 @@ script:
   mvn clean verify -B
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t 7132ea65-7f4b-411b-9ee9-5165ae9b94ff
+  - bash <(curl -s https://codecov.io/bash)
