@@ -7,7 +7,7 @@ cache:
     - "$HOME/.m2/repository"
 
 script:
-  mvn clean verify -B
+  mvn verify -B
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
