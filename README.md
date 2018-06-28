@@ -3,6 +3,7 @@
 ## Akka-Kotlin-Koin-Ktor (AK<sup>3</sup>) Bank API
 
 [![Build Status](https://travis-ci.org/kpavlov/ak3-bank.svg?branch=master)](https://travis-ci.org/kpavlov/ak3-bank)
+[![codecov](https://codecov.io/gh/kpavlov/ak3-bank/branch/master/graph/badge.svg)](https://codecov.io/gh/kpavlov/ak3-bank)
 
 The project consists of an API to be used for opening customer bank accounts and saving transactions.
 
@@ -33,4 +34,27 @@ To build with maven and start:
 
     ./build-and-start.sh
     
+## REST API Commands
+
+### Create Customer
+
+    curl -v \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        --data '{"firstName": "Tirion", "lastName": "Lannister"}' \
+        http://localhost:8080/v1/customers | jq
+
+### Create new current account with balance
+
+    curl -v \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/json" \
+        --data '{"initialCredit": 100500.42, "type": "CURRENT"}' \
+        http://localhost:8080/v1/customers/1/accounts | jq 
+        
+### Get customer info with account statements
+
+    curl -v \
+        -H "Accept: application/json" \
+        http://localhost:8080/v1/customers/1 | jq   
 
