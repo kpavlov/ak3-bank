@@ -19,7 +19,7 @@ class CustomersService(private val actorSystem: ActorSystem) : AbstractAkkaServi
         private val customerIdSequence = AtomicInteger(0)
     }
 
-    override fun createCustomer(customer: Customer): CompletionStage<CustomerDetails> {
+    override suspend fun createCustomer(customer: Customer): CompletionStage<CustomerDetails> {
         val newId = customerIdSequence.incrementAndGet()
         val props = Props.create(CustomerActor::class.java, newId, customer)
         val actorRef = actorSystem.actorOf(props, "customer-$newId")

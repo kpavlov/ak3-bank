@@ -36,21 +36,15 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
 
     post<Customers> {
         val req = call.receive<CreateCustomerRequest>()
-        withContext(computeContext) {
-            val details = customersApi.createCustomer(
-                    Customer(firstName = req.firstName, lastName = req.lastName)
-            ).await()
-            call.response.header(HttpHeaders.Location, "/customers/${details.id}")
-            call.respond(HttpStatusCode.Created, convertCustomerDetails(details))
-        }
+        val details = customersApi.createCustomer(Customer(firstName = req.firstName, lastName = req.lastName)).await()
+        call.response.header(HttpHeaders.Location, "/customers/${details.id}")
+        call.respond(HttpStatusCode.Created, convertCustomerDetails(details))
     }
 
     get<CustomerLocation> {
         val customerId = it.customerId
-        withContext(computeContext) {
-            val details = customersApi.getCustomerDetails(customerId).await()
-            call.respond(convertCustomerDetails(details))
-        }
+        val details = customersApi.getCustomerDetails(customerId).await()
+        call.respond(convertCustomerDetails(details))
     }
 
     post<CustomerAccountsLocation> {

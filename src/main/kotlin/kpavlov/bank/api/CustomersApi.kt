@@ -7,6 +7,6 @@ import java.util.concurrent.CompletionStage
 
 interface CustomersApi {
 
-    fun createCustomer(customer: Customer): CompletionStage<CustomerDetails>
+    suspend fun createCustomer(customer: Customer): CompletionStage<CustomerDetails>
     suspend fun getCustomerDetails(customerId: CustomerId): CompletionStage<CustomerDetails>
 }
