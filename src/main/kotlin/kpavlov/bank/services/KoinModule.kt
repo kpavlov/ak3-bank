@@ -5,16 +5,12 @@ import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
 import org.koin.dsl.module.applicationContext
 
-private val actorSystem = ActorSystem.create("bank")
-
 val KoinModule = applicationContext {
 
-    val customersService = CustomersService(actorSystem)
+    val actorSystem = ActorSystem.create("bank")
 
     bean { AccountsService(actorSystem) } bind AccountsApi::class
-    bean { customersService } bind CustomersApi::class bind CustomersService::class
+    bean { CustomersService(actorSystem) } bind CustomersApi::class bind CustomersService::class
     bean { TransactionService(actorSystem) } bind TransactionService::class
-
-    Bootstrap(customersService)
 }
 
