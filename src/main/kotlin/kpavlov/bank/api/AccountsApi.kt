@@ -8,9 +8,9 @@ import java.util.concurrent.CompletionStage
 
 interface AccountsApi {
 
-    fun openAccount(customerId: CustomerId,
-                    initialCredit: BigDecimal = BigDecimal.ZERO,
-                    type: AccountType = AccountType.CURRENT): CompletionStage<AccountCreatedEvt>
+    suspend fun openAccount(customerId: CustomerId,
+                            type: AccountType = AccountType.CURRENT,
+                            initialCredit: BigDecimal = BigDecimal.ZERO): CompletionStage<AccountCreatedEvt>
 
-    fun getAccountStatement(customerId: CustomerId, accountId: AccountId): CompletionStage<AccountStatementEvt>
+    suspend fun getAccountStatement(customerId: CustomerId, accountId: AccountId): CompletionStage<AccountStatementEvt>
 }

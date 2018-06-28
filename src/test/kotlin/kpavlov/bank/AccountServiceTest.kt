@@ -99,8 +99,9 @@ class AccountServiceTest : KoinTest {
         val initialCreditCents = (1..1000_000_00).random()
         val initialCredit = BigDecimal(initialCreditCents).movePointLeft(2)
         //when
-        val createdAccountEvt = accountsApi.openAccount(customerId, initialCredit)
-                .toCompletableFuture().get()
+        val createdAccountEvt = runBlocking {
+            accountsApi.openAccount(customerId, initialCredit = initialCredit)
+        }.toCompletableFuture().get()
 
         //then
         createdAccountEvt shouldNotBe null

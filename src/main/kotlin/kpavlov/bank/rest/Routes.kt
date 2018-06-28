@@ -13,8 +13,6 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import kotlinx.coroutines.experimental.future.await
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
-import kotlinx.coroutines.experimental.withContext
 import kpavlov.bank.api.AccountsApi
 import kpavlov.bank.api.CustomersApi
 import kpavlov.bank.domain.AccountId
@@ -27,8 +25,6 @@ import java.math.BigDecimal
 
 
 fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
-
-    val computeContext = newFixedThreadPoolContext(10, "compute")
 
     get<Any> {
         call.respondText("OK", ContentType.Text.Plain)
@@ -54,19 +50,15 @@ fun Routing.root(accountsApi: AccountsApi, customersApi: CustomersApi) {
             kpavlov.bank.rest.v1.model.AccountType.CURRENT -> AccountType.CURRENT
             null -> AccountType.CURRENT
         }
-        withContext(computeContext) {
-            val evt = accountsApi.openAccount(it.customerId, req.initialCredit ?: BigDecimal.ZERO, type).await()
-            call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${evt.accountId}")
-            call.respond(HttpStatusCode.Created)
-        }
+        val evt = accountsApi.openAccount(it.customerId, type, req.initialCredit ?: BigDecimal.ZERO).await()
+        call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${evt.accountId}")
+        call.respond(HttpStatusCode.Created)
     }
 
     get<CustomerAccountLocation> {
-        withContext(computeContext) {
-            val evt = accountsApi.getAccountStatement(it.customerId, it.accountId).await()
-            call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${it.accountId}")
-            call.respond(HttpStatusCode.OK, convertAccountStatement(evt.accountStatement))
-        }
+        val evt = accountsApi.getAccountStatement(it.customerId, it.accountId).await()
+        call.response.header(HttpHeaders.Location, "/customers/${it.customerId}/accounts/${it.accountId}")
+        call.respond(HttpStatusCode.OK, convertAccountStatement(evt.accountStatement))
     }
 
 }

@@ -16,13 +16,13 @@ import java.util.concurrent.CompletionStage
 
 class AccountsService(actorSystem: ActorSystem) : AbstractAkkaService(actorSystem), AccountsApi {
 
-
     private val log = LoggerFactory.getLogger(AccountsService::class.java)
 
-    override fun openAccount(customerId: CustomerId, initialCredit: BigDecimal, type: AccountType): CompletionStage<AccountCreatedEvt> {
+    override suspend fun openAccount(customerId: CustomerId, type: AccountType, initialCredit: BigDecimal): CompletionStage<AccountCreatedEvt> {
         if (initialCredit.signum() < 0) {
             throw IllegalArgumentException("Initial balance should not be negative")
         }
+        log.info("Opening {} account for customer #{} with balance={}", type, customerId, initialCredit)
         val initialBalanceCents = initialCredit.movePointRight(2).longValueExact()
         val actorSelection = lookupCustomerActor(customerId)
         val cmd = CreateAccountCommand(initialBalanceCents = initialBalanceCents, type = type)
@@ -30,7 +30,8 @@ class AccountsService(actorSystem: ActorSystem) : AbstractAkkaService(actorSyste
         return ask(actorSelection, cmd, TIMEOUT) as CompletionStage<AccountCreatedEvt>
     }
 
-    override fun getAccountStatement(customerId: CustomerId, accountId: AccountId): CompletionStage<AccountStatementEvt> {
+    override suspend fun getAccountStatement(customerId: CustomerId, accountId: AccountId): CompletionStage<AccountStatementEvt> {
+        log.info("Requesting account statement for customer #{} accountId#{}", customerId, accountId)
         val actorSelection = lookupCustomerAccountActor(customerId, accountId)
         @Suppress("UNCHECKED_CAST")
         return ask(actorSelection, GetAccountStatementCommand(), TIMEOUT) as CompletionStage<AccountStatementEvt>
