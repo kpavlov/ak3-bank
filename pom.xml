@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <disableXmlReport>true</disableXmlReport>
         <!-- Versions -->
-        <akka.version>2.5.13</akka.version>
+        <akka.version>2.5.16</akka.version>
         <jackson.version>2.9.6</jackson.version>
         <koin.version>0.9.3</koin.version>
         <kotlin.version>1.6.0</kotlin.version>
