@@ -18,7 +18,7 @@
         <akka.version>2.5.13</akka.version>
         <jackson.version>2.9.6</jackson.version>
         <koin.version>0.9.3</koin.version>
-        <kotlin.version>1.2.50</kotlin.version>
+        <kotlin.version>1.6.0</kotlin.version>
         <ktor.version>0.9.3</ktor.version>
         <logback.version>1.2.3</logback.version>
         <scala.version.tools>2.12</scala.version.tools>
