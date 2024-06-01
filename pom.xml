@@ -19,7 +19,7 @@
         <jackson.version>2.9.8</jackson.version>
         <koin.version>0.9.3</koin.version>
         <kotlin.version>1.6.0</kotlin.version>
-        <ktor.version>0.9.3</ktor.version>
+        <ktor.version>0.9.5</ktor.version>
         <logback.version>1.2.13</logback.version>
         <scala.version.tools>2.12</scala.version.tools>
         <swagger.codegen.version>3.0.0-rc1</swagger.codegen.version>
